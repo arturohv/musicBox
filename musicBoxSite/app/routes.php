@@ -11,7 +11,22 @@
 |
 */
 
-Route::get('/', function()
+/*Route::get('/', function()
 {
 	return View::make('hello');
+});*/
+
+
+
+Route::resource('uploads', 'UploadController');
+Route::resource('uploadsFiles', 'UploadFileController');
+
+Route::get('/', function()
+{
+	return View::make('pages.home');
+});
+
+Route::get('contact', function()
+{
+	return View::make('pages.contact');
 });

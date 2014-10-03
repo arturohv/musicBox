@@ -19,8 +19,8 @@ class UploadController extends \BaseController {
 	 * @return Response
 	 */
 	public function create()
-	{
-		//
+	{		
+		$this->layout->nest('content', 'uploads.create', array());		
 	}
 
 
@@ -31,7 +31,23 @@ class UploadController extends \BaseController {
 	 */
 	public function store()
 	{
-		//
+		return Response::Json(Input::all());
+		/*$file = Input::file('file'); // your file upload input field in the form should be named 'file'
+
+		$destinationPath = 'uploads/originals/';//.str_random(8);
+		$filename = $file->getClientOriginalName();
+		//$extension =$file->getClientOriginalExtension(); //if you need extension of the file
+
+		
+		/*$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
+		 
+		if( $uploadSuccess ) {
+		   return Response::json('success', 200); // or do a redirect with some message that file was uploaded
+		} else {
+		   return Response::json('error', 400);
+		}*/
+
+		
 	}
 
 
