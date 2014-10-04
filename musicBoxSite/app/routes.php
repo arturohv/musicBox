@@ -19,7 +19,7 @@
 
 
 Route::resource('uploads', 'UploadController');
-Route::resource('uploadsFiles', 'UploadFileController');
+Route::post('uploads/uploadFile', 'UploadController@uploadFile');
 
 Route::get('/', function()
 {

@@ -1,10 +1,8 @@
-
-
 @extends('layouts.default')
 <?php View::share('titulo', 'Subir Archivo'); ?>
 @section('content')
 
-{{ Form::open(array('action' => 'UploadController@uploadFile','files' => true)) }}
+{{ Form::open(array('action' => 'UploadFileController@uploadFile','files' => true)) }}
 
 <div class="row">
         <div class="col-md-8 col-md-offset-2">
@@ -16,7 +14,7 @@
 						<div class="form-group">
 							{{ Form::label('file', 'Ruta del Archivo:', array('class' => 'control-label col-md-3')) }}                 
                             <div class="col-md-7">
-                            	{{ Form::file('file', '', array('class' => 'form-control input-sm')) }}	                           
+                            	{{ Form::file('file', '', array('class' => 'form-control input-sm')) }}	                    
                             </div>
                         </div>                                      
 

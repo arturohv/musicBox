@@ -23,29 +23,51 @@ class UploadController extends \BaseController {
 		$this->layout->nest('content', 'uploads.create', array());		
 	}
 
+	public function uploadFile()
+	{
+		$file = Input::file('file');
+		$modeType = Input::get('tipoMod');
+		$valor = Input::get('valor');
+
+		$parts = 0;
+		$timePerChunk = 0;
+
+		$destinationPath = 'uploads/originals';
+		$filename = $file->getClientOriginalName();
+		//$extension =$file->getClientOriginalExtension(); //if you need extension of the file
+		$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
+		 
+		if( $uploadSuccess ) {
+			$fileurl = $destinationPath . '/' . $filename;
+			if ($modeType == 'bySize') {
+				$parts = $valor; 
+			} else {
+				$timePerChunk = $valor;
+			}
+			
+			store($filename,$fileurl,$parts,$timePerChunk);	
+		   //return Response::json('success', 200); // or do a redirect with some message that file was uploaded
+		} else {
+		   return Response::json('error', 400);
+		}
+	}
+
 
 	/**
 	 * Store a newly created resource in storage.
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store($pFileName, $pFileUrl, $pParts, $timePerChunk)
 	{
-		return Response::Json(Input::all());
-		/*$file = Input::file('file'); // your file upload input field in the form should be named 'file'
-
-		$destinationPath = 'uploads/originals/';//.str_random(8);
-		$filename = $file->getClientOriginalName();
-		//$extension =$file->getClientOriginalExtension(); //if you need extension of the file
-
 		
-		/*$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
-		 
-		if( $uploadSuccess ) {
-		   return Response::json('success', 200); // or do a redirect with some message that file was uploaded
-		} else {
-		   return Response::json('error', 400);
-		}*/
+		$upload = new Upload();
+		$upload->filename = $pFileName;
+		$upload->file_url = $pFileUrl;
+		$upload->parts = $pParts;
+		$upload->time_per_chunk = $timePerChunk;
+		$upload->save();
+		return Redirect::to('/');
 
 		
 	}
