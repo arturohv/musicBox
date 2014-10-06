@@ -45,7 +45,7 @@ class UploadController extends \BaseController {
 				$timePerChunk = $valor;
 			}
 			
-			store($filename,$fileurl,$parts,$timePerChunk);	
+			$this->store($filename,$fileurl,$parts,$timePerChunk);	
 		   //return Response::json('success', 200); // or do a redirect with some message that file was uploaded
 		} else {
 		   return Response::json('error', 400);
@@ -59,17 +59,14 @@ class UploadController extends \BaseController {
 	 * @return Response
 	 */
 	public function store($pFileName, $pFileUrl, $pParts, $timePerChunk)
-	{
-		
+	{		
 		$upload = new Upload();
 		$upload->filename = $pFileName;
-		$upload->file_url = $pFileUrl;
+		$upload->fileurl = $pFileUrl;
 		$upload->parts = $pParts;
 		$upload->time_per_chunk = $timePerChunk;
 		$upload->save();
-		return Redirect::to('/');
-
-		
+		return Redirect::to('/');	
 	}
 
 
