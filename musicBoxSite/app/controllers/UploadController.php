@@ -66,7 +66,7 @@ class UploadController extends \BaseController {
 		$upload->parts = $pParts;
 		$upload->time_per_chunk = $timePerChunk;
 		$upload->save();
-		return Redirect::to('/');	
+		$this->layout->nest('content', 'uploads.create', array());		
 	}
 
 
