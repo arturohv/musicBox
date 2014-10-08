@@ -66,6 +66,7 @@ class UploadController extends \BaseController {
 		$upload->parts = $pParts;
 		$upload->time_per_chunk = $timePerChunk;
 		$upload->save();
+		Queue::push('laravel', array('message' => 'Hola Mundo'));
 		$this->layout->nest('content', 'uploads.create', array());		
 	}
 
