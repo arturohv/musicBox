@@ -44,7 +44,7 @@ class UploadController extends \BaseController {
 			} else {
 				$timePerChunk = $valor;
 			}
-			
+			//Guarda el registro en base de datos
 			$this->store($filename,$fileurl,$parts,$timePerChunk);	
 		   //return Response::json('success', 200); // or do a redirect with some message that file was uploaded
 		} else {
@@ -60,13 +60,17 @@ class UploadController extends \BaseController {
 	 */
 	public function store($pFileName, $pFileUrl, $pParts, $timePerChunk)
 	{		
+		
 		$upload = new Upload();
 		$upload->filename = $pFileName;
 		$upload->fileurl = $pFileUrl;
 		$upload->parts = $pParts;
 		$upload->time_per_chunk = $timePerChunk;
 		$upload->save();
-		Queue::push('laravel', array('message' => 'Hola Mundo'));
+		//Arma la cadena en formato Json
+		$jsonString = '{"id":"' . $upload->id . '", "file":"' . $upload->fileurl . '","parts":"'. $upload->parts . '", "time_per_chunk":"' . $upload->time_per_chunk . '"}';
+		//Envia el mensaje al servidor de colas
+		Queue::push('laravel', array('message' => $jsonString));
 		$this->layout->nest('content', 'uploads.create', array());		
 	}
 
