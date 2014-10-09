@@ -1,9 +1,11 @@
 <?php
-	
+	namespace workerMQ{
 
 	include_once('amqp.php');
 
-	$oAmqp = new Amqp();
+	$oAmqp = new ampq();
+
+	//$test = $oAmqp->amqp_connection();
 
 	$oAmqp->amqp_receive("laravel","laravel","laravel");
 
@@ -51,4 +53,6 @@ $oAmqp->close();
 	/*do {
 		echo 'prueba ciclo';
 	} while ( 1==1);*/
+
+	}
 ?>
