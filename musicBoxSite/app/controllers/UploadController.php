@@ -32,13 +32,13 @@ class UploadController extends \BaseController {
 		$parts = 0;
 		$timePerChunk = 0;
 
-		$destinationPath = 'uploads/originals';
+		$destinationPath = 'uploads/originals';		
 		$filename = $file->getClientOriginalName();
-		//$extension =$file->getClientOriginalExtension(); //if you need extension of the file
+		//$extension =$file->getClientOriginalExtension();
 		$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
 		 
 		if( $uploadSuccess ) {
-			$fileurl = $destinationPath . '/' . $filename;
+			$fileurl = $destinationPath . "/" . $filename;
 			if ($modeType == 'bySize') {
 				$parts = $valor; 
 			} else {
@@ -68,11 +68,12 @@ class UploadController extends \BaseController {
 		$upload->time_per_chunk = $timePerChunk;
 		$upload->save();
 		//Arma la cadena en formato Json
-		$jsonString = '{"id":"' . $upload->id . '", "file":"' . $upload->fileurl . '","parts":"'. $upload->parts . '", "time_per_chunk":"' . $upload->time_per_chunk . '"}';
+		$jsonString = '{"id":"'.$upload->id.'","file":"'.$upload->fileurl.'","parts":"'.$upload->parts.'","time_per_chunk":"'.$upload->time_per_chunk.'"}';				
 		//Envia el mensaje al servidor de colas
 		Queue::push('laravel', array('message' => $jsonString));
 		$this->layout->nest('content', 'uploads.create', array());		
 	}
+
 
 
 	/**
