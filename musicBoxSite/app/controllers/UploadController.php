@@ -36,9 +36,12 @@ class UploadController extends \BaseController {
 		$filename = $file->getClientOriginalName();
 		//$extension =$file->getClientOriginalExtension();
 		$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
-		 
 		if( $uploadSuccess ) {
 			$fileurl = $destinationPath . "/" . $filename;
+			//Renombrar el archivo con uno temporal
+			$newName = uniqid().'.mp3';			
+			rename($fileurl, $destinationPath.'/'.$newName);
+			$fileurl = $destinationPath . "/" . $newName;
 			if ($modeType == 'bySize') {
 				$parts = $valor; 
 			} else {

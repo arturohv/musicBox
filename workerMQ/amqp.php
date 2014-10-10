@@ -82,12 +82,64 @@ namespace workerMQ{
 			return $msg;			
 		}
 
-		
+		public function getIntervalo($tSeg, $tParts, $tValue){
+			$partSize = $tSeg / $tParts;
+			//Obtine Horas
+			$iHour = $partSize / 3600;
+			//Obtiene minutos
+			$iMin = $iHour - intval($iHour);
+			$iMin = $iMin * 60;
+			//Obtiene Segundos
+			$iSeg = $iMin - intval($iMin);
+			$iSeg = $iSeg * 60;
+
+			if ($tValue == 'hh') {
+				return intval($iHour);
+			} elseif ($tValue == 'mm') {
+				return intval($iMin); 
+			} else {
+				return $iSeg;
+			}
+		}
+
+		public function getParts($tSeg, $tTime){
+			$tTime = intval($tTime);
+			if ($tSeg >= ($tTime * 60)) {
+			 	return $tSeg / ($tTime * 30);
+			 } else {
+			 	return 0;
+			 }
+		}
+
+
+		public function ffmpeg_split($file, $iIni, $iFin, $outName){
+			$comm = "ffmpeg -acodec copy -i ".$file." -ss ".$iIni." -t ".$iFin." ".$outName;
+			//echo "$comm\n";
+			echo shell_exec($comm);
+			
+
+
+			//ffmpeg -acodec copy -i input.mp3 -ss 00:00:25 -t 00:02:00 output.wav 	
+			//echo shell_exec("ffmpeg -i input.avi output.avi &");
+
+		}
+
+		public function formatTime($pHour, $pMin, $pSec){
+			
+			$sHour = str_pad($pHour, 2, "0", STR_PAD_LEFT);
+			$sMin = str_pad($pMin, 2, "0", STR_PAD_LEFT);
+			$pSec = intval($pSec); 
+			$sSec = str_pad($pSec, 2, "0", STR_PAD_LEFT);
+			//echo "$sHour:$sMin:$sSec\n";
+			return "$sHour:$sMin:$sSec";
+		}
+
 	
 		public function ffmpeg_process($media){
 			
 			$filename = "";
-
+			$duracionSeg = 0;
+			$pTime = 0;
 
 			foreach ($media as $key => $value) {
 				if ($key == 'file') {
@@ -112,19 +164,112 @@ namespace workerMQ{
 		   //Valida que exista el archivo en la ubicacion actual
 		   if ($existeArchivo == 1) {
 		    	//Obtener Tamaño en bytes del archivo que se va a procesar
-		    	/*$fSize = filesize($filename) . ' bytes';	
-		    	//Por tamaño caso contrario por tiempo
-		    	if ($pParts > 0) {
-		    		# code...
-		    			echo "partes \n";
-		    		} else {
-		    			echo "tamaño \n";
-		    		}	*/
+		    	$fSize = filesize($filename) . ' bytes';
+		    	//Obtener la duración
+		    	$f = $filename;
+				$m = new mp3file($f);
+				$a = $m->get_metadata();
+				foreach ($a as $key => $value) {
+					if ($key == 'Length') {
+						
+						$duracionSeg = $value;						
+					} 
+				}
 
-		    		$f = $filename;
-					$m = new mp3file($f);
-					$a = $m->get_metadata();
-					print_r($a);
+				//echo "$duracionSeg \n";
+
+				if ($duracionSeg > 0) {
+					//Por tamaño caso contrario por tiempo
+			    	if ($pParts > 0) {
+			    			//Obtener el tamaño de cada parte segun el tamaño
+			    			//del archivo. 
+			    			$iHour = $this->getIntervalo($duracionSeg,$pParts,'hh');
+			    			$iMin = $this->getIntervalo($duracionSeg,$pParts,'mm');
+			    			$iSec = $this->getIntervalo($duracionSeg,$pParts,'ss');		    			
+
+			    			
+			    			$invHour = $iHour;
+			    			$invMin = $iMin;
+			    			$invSeg = $iSec;
+			    			for ($i=1; $i <=$pParts ; $i++) { 
+			    				//echo "$invHour:$invMin:$invSeg\n";
+
+			    				if ($i == 1) {
+			    					//echo "00:00:00 -> $invHour:$invMin:$invSeg\n";
+			    					$this->ffmpeg_split($filename, '00:00:00', $this->formatTime($invHour,$invMin,$invSeg), '../musicBoxSite/uploads/parts/'.'file'.$pId.$i.'.mp3');
+			    				} else{
+			    					$bInvHour = $invHour;
+			    					$bInvMin = $invMin;
+			    					$bInvSeg =$invSeg;
+
+			    					//Incrementa Horas, minutos y segundos
+				    				$invHour = $invHour + $iHour;	
+				    				$invMin = $invMin + $iMin;
+				    				if ($invMin > 60) {			    					
+				    					while ($invMin > 60) {
+				    						$invMin = $invMin - 60;
+				    						$invHour = $invHour + 1;
+				    					}
+				    				}
+
+				    				$invSeg = $invSeg + $iSec;
+				    				if ($invSeg > 60) {			    					
+				    					while ($invSeg > 60) {
+				    						$invSeg = $invSeg - 60;
+				    						$invMin = $invMin + 1;
+				    					}
+				    				}
+				    				//********************************* 
+
+				    				//echo "$bInvHour:$bInvMin:$bInvSeg -> $invHour:$invMin:$invSeg\n";
+				    				$this->ffmpeg_split($filename, $this->formatTime($bInvHour,$bInvMin,$bInvSeg), $this->formatTime($iHour,$iMin,$iSec), '../musicBoxSite/uploads/parts/'.'file'.$pId.$i.'.mp3');
+			    				}			
+			    				
+			    			}
+
+			    		} else {
+			    			//Tiempo
+			    			$parts = $this->getParts($duracionSeg,$pTime);
+			    			$parts = intval($parts);
+			    			
+			    			$iHour = $pTime / 60;			    					    			
+			    			$iMin = $iHour - intval($iHour);			    			
+			    			$iMin = $iMin * 60;		    			
+			    			$invHour = intval($iHour);
+			    			$invMin = $iMin;
+			    			
+
+			    			for ($i=1; $i <=$parts ; $i++) { 
+			    				if ($i == 1) {
+			    					$this->ffmpeg_split($filename, '00:00:00', $this->formatTime($invHour,$invMin,'0'), '../musicBoxSite/uploads/parts/'.'file'.$pId.$i.'.mp3');
+			    				} else {
+
+			    					$bInvHour = $invHour;
+			    					$bInvMin = $invMin;
+			    					$bInvSeg =0;
+
+			    					//Incrementa Horas, minutos y segundos
+				    				$invHour = $invHour + intval($iHour);
+				    				$invMin = $invMin + $iMin;
+				    				if ($invMin > 60) {			    					
+				    					while ($invMin > 60) {
+				    						$invMin = $invMin - 60;
+				    						$invHour = $invHour + 1;
+				    					}
+				    				}
+
+				    				$this->ffmpeg_split($filename, $this->formatTime($bInvHour,$bInvMin,$bInvSeg), $this->formatTime(intval($iHour),$iMin,'0'), '../musicBoxSite/uploads/parts/'.'file'.$pId.$i.'.mp3');
+			    				}
+			    			}
+			    		}	
+				}	
+
+		    		
+					
+
+					
+
+
 		   } 	
 			    
 			
@@ -133,10 +278,11 @@ namespace workerMQ{
 
 	}
 
-
-
-
-
-
 }
+
+
+
+
+
+
 ?>
