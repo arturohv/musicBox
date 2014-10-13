@@ -1,5 +1,3 @@
-
-
 @extends('layouts.default')
 <?php View::share('titulo', 'Subir Archivo'); ?>
 @section('content')

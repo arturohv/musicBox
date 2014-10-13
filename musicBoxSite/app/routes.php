@@ -21,6 +21,8 @@
 Route::resource('uploads', 'UploadController');
 Route::post('uploads/uploadFile', 'UploadController@uploadFile');
 
+Route::resource('resultparts', 'ResultPartsController');
+
 Route::get('/', function()
 {
 	return View::make('pages.home');
@@ -30,3 +32,4 @@ Route::get('contact', function()
 {
 	return View::make('pages.contact');
 });
+

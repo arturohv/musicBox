@@ -15,6 +15,7 @@
                         <li><a href="/">Home</a></li>                        
 						<li><a href="/contact">Contact</a></li>
                         <li>{{link_to("uploads/create", 'Subir Archivo', $attributes = array(), $secure = null);}}</li>
+                        <li>{{link_to("resultparts", 'Resultados', $attributes = array(), $secure = null);}}</li>
                     </ul> 
                 </div>
             </div>

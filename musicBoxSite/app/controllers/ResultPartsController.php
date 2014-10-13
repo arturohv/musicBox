@@ -7,9 +7,19 @@ class ResultPartsController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function index()
-	{
-		//
+	public function index($idmedia)
+	{	
+		echo "Hola";	
+		$resultados  = ResultParts::GetResultado($idmedia);
+		//$resultados  = ResultParts::all();
+		$this->layout->titulo = 'Resultados';
+		$this->layout->nest(
+			'content',
+			'resultParts.index',
+			array(
+				'resultados' => $resultados
+			)
+		);		
 	}
 
 

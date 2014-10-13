@@ -5,6 +5,7 @@ namespace workerMQ{
 	use AMQPQueue;
 
 	include_once('mp3Lib.php');
+	include_once('PgSQL.php');
 	
 	class ampq {
 
@@ -37,22 +38,11 @@ namespace workerMQ{
 		    $queue->bind($exchangeName, $routingKey);
 
 		    while($message = $queue->get()) {
-		        /*echo("Message #".$message->getDeliveryTag()." '".$message->getBody()."'");
-
-		        if($message->isRedelivery()) {
-		            echo("\t(this message has already been delivered)");
-		        }
-		        // just for testing purpose, shows how to manually remove a message from queue
-		        if(rand(0,6) > 4) {
-		            
-		            echo("\t(this message has been removed from the queue)");
-		        }
-		        print_r($message->getMessageId());
-		        echo "\n";*/
-		        
+		      	        
+		        $queue->ack($message->getDeliveryTag());
 		        $media = $this->ampq_process_msg($message);
 		        $this->ffmpeg_process($media);
-		        //$queue->ack($message->getDeliveryTag());
+		        
 		    }
 
 		    if(!$amqpConnection->disconnect()) {
@@ -111,12 +101,35 @@ namespace workerMQ{
 			 }
 		}
 
+		public function insertResult($fileUrl){
+			$oPgl = new PgSQL();
+			$oPgl->connect('localhost','5432','arcanna', 'arturohv','bastos'); 
+
+			$qs = "select max(id) as last_id from upload;";
+			$res = $oPgl->select($qs);
+
+			foreach ($res as $key => $value) {
+				if ($key == 'last_id') {
+					foreach ($value as $k1 => $v) {
+						$last_id = $v;
+					}
+
+				}
+			}
+
+			$qs = "insert into result_parts (upload_id, filename, fileurl) values ({$last_id}, '{$fileUrl}', '{$fileUrl}');";
+			
+			$oPgl->sql_add($qs);
+			$oPgl->transaction();
+			//$oPgl->close();
+		}
+
 
 		public function ffmpeg_split($file, $iIni, $iFin, $outName){
 			$comm = "ffmpeg -acodec copy -i ".$file." -ss ".$iIni." -t ".$iFin." ".$outName;
-			//echo "$comm\n";
-			echo shell_exec($comm);
-			
+			echo "$comm\n";
+			//echo shell_exec($comm);
+			$this->insertResult($outName);
 
 
 			//ffmpeg -acodec copy -i input.mp3 -ss 00:00:25 -t 00:02:00 output.wav 	

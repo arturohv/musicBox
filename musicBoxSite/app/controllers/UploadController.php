@@ -74,7 +74,12 @@ class UploadController extends \BaseController {
 		$jsonString = '{"id":"'.$upload->id.'","file":"'.$upload->fileurl.'","parts":"'.$upload->parts.'","time_per_chunk":"'.$upload->time_per_chunk.'"}';				
 		//Envia el mensaje al servidor de colas
 		Queue::push('laravel', array('message' => $jsonString));
-		$this->layout->nest('content', 'uploads.create', array());		
+		//$this->layout->nest('content', 'uploads.create', array());
+		//$this->layout->nest('content', 'resultParts.index', array());
+		//return Redirect::to('uploadparts');
+		$this->layout->titulo = 'Resultados';
+		return Redirect::to('resultparts/index');			
+		//return Redirect::route('resultParts.index',array($upload->id));					
 	}
 
 
