@@ -1,7 +1,7 @@
 <?php
 
 class UploadController extends \BaseController {
-
+	
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -48,8 +48,15 @@ class UploadController extends \BaseController {
 				$timePerChunk = $valor;
 			}
 			//Guarda el registro en base de datos
-			$this->store($filename,$fileurl,$parts,$timePerChunk);	
-		   //return Response::json('success', 200); // or do a redirect with some message that file was uploaded
+			$id = $this->store($filename,$fileurl,$parts,$timePerChunk);
+			return Redirect::to('results')->with('message',$id);
+			/*
+			//Redirige a la pagina de resultados
+			$this->layout->titulo = 'Resultados';
+			return Redirect::to('results/index')->with('id', $id);
+		   	//return Response::json('success', 200); // or do a redirect with some message that file was uploaded
+
+		   	*/
 		} else {
 		   return Response::json('error', 400);
 		}
@@ -74,12 +81,9 @@ class UploadController extends \BaseController {
 		$jsonString = '{"id":"'.$upload->id.'","file":"'.$upload->fileurl.'","parts":"'.$upload->parts.'","time_per_chunk":"'.$upload->time_per_chunk.'"}';				
 		//Envia el mensaje al servidor de colas
 		Queue::push('laravel', array('message' => $jsonString));
-		//$this->layout->nest('content', 'uploads.create', array());
-		//$this->layout->nest('content', 'resultParts.index', array());
-		//return Redirect::to('uploadparts');
-		$this->layout->titulo = 'Resultados';
-		return Redirect::to('resultparts/index');			
-		//return Redirect::route('resultParts.index',array($upload->id));					
+		return $upload->id;	
+					
+							
 	}
 
 

@@ -11,4 +11,5 @@
 <!-- CSS are placed here -->
 {{ HTML::style('css/bootstrap.css') }}
 {{ HTML::style('css/bootstrap-theme.css') }}
+{{ HTML::script('js/jquery-1.11.1.min.js'); }}
 

@@ -1,26 +1,36 @@
 @extends('layouts.default')
-<?php View::share('titulo', 'Resultado');    
-?>
+<?php View::share('titulo');?>
 @section('content')
-<h2>Resultado del proceso:</h2>
-<br/>
-<table class="table table-striped table-bordered">
+
+<table id="tabla">
     <tr>
-        <th>Nombre de Archivo</th>
-        <th>Ruta</th>        
+        <th>Id</th>
+        <th>Placa</th>
+        <th>Color</th>
         <th>Acciones</th>
     </tr>
-
-    @foreach($resultados as $r)
-        <tr>
-            <td>{{ $r->archivo }}</td>   
-            <td>{{ $r->ruta }}</td>      
-                
-            <td>
-                Descarga
-            </td>   
-        </tr>
-    @endforeach
 </table>
+
+<script type="text/javascript">
+    alert("Prueba de cargar_tabla");
+    $(document).ready(function() {
+        cargar_tabla();
+        
+    });
+
+    function cargar_tabla() {
+        $.getJSON('avionesjs', function(json, textStatus) {
+            for (var i = 0; i < json.length; i++) {
+                var row = '<tr>';
+                row += '<td>' + json[i].id + '</td>';
+                row += '<td>' + json[i].filename + '</td>';
+                
+                row += '</tr>';
+                $('#tabla tr:last').after(row);
+            };
+            
+    }
+</script>
+
 
 @stop

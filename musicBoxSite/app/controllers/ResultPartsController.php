@@ -7,19 +7,36 @@ class ResultPartsController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function index($idmedia)
+	
+	
+
+	public function index()
 	{	
-		echo "Hola";	
-		$resultados  = ResultParts::GetResultado($idmedia);
-		//$resultados  = ResultParts::all();
+		
+		/*$id = Session::get('message');				
 		$this->layout->titulo = 'Resultados';
+		$resultados  = ResultParts::GetResultado($id);		
+		
 		$this->layout->nest(
 			'content',
 			'resultParts.index',
 			array(
 				'resultados' => $resultados
 			)
-		);		
+		);*/
+
+	if (Request::ajax())
+		{
+    		$aviones = ResultParts::all();
+    		return Response::Json($aviones);
+		}
+		$this->layout->titulo = 'Resultados';
+		$this->layout->nest(
+			'content',
+			'resultParts.index'
+		);
+
+
 	}
 
 

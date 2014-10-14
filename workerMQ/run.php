@@ -2,7 +2,6 @@
 	namespace workerMQ{
 
 	include_once('amqp.php');
-
 	$oAmqp = new ampq();
 
 	
@@ -11,7 +10,9 @@
 
 	do {
 		$oAmqp->amqp_receive("laravel","laravel","laravel");
-	} while ( 1==1);
+		sleep(1);
+		echo "Escuchando...\n";		
+	} while (1==1);
 
 	}
 ?>
