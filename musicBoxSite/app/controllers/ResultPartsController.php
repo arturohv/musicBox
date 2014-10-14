@@ -26,7 +26,7 @@ class ResultPartsController extends \BaseController {
 		);*/
 
 	if (Request::ajax())
-		{
+		{			
     		$aviones = ResultParts::all();
     		return Response::Json($aviones);
 		}
