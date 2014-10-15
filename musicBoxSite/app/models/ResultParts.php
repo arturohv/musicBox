@@ -11,7 +11,7 @@
 
 		public static function GetResultado($idMedia)
 		{
-			$sql = 'select u.filename as archivo, rp.fileurl as ruta
+			$sql = 'select rp.id as id, u.filename as archivo, rp.fileurl as ruta
 					from result_parts rp
 					inner join upload u on u.id = rp.upload_id
 					where u.id = '. $idMedia;

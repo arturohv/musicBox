@@ -23,7 +23,7 @@ Route::post('uploads/uploadFile', 'UploadController@uploadFile');
 
 
 Route::resource('results', 'ResultPartsController');
-//Route::get('results/{id}','ResultPartsController@index');
+Route::get('results/{id}','ResultPartsController@download');
 
 Route::get('/', function()
 {
