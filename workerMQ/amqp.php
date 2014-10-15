@@ -127,8 +127,8 @@ namespace workerMQ{
 
 		public function ffmpeg_split($file, $iIni, $iFin, $outName){
 			$comm = "ffmpeg -acodec copy -i ".$file." -ss ".$iIni." -t ".$iFin." ".$outName;
-			echo "$comm\n";
-			//echo shell_exec($comm);
+			//echo "$comm\n";
+			echo shell_exec($comm);
 			$this->insertResult($outName);
 
 

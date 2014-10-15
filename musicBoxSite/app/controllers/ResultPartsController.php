@@ -21,6 +21,7 @@ class ResultPartsController extends \BaseController {
 	if (Request::ajax())		
 		{
 			$last_id = DB::table('upload')->max('id');
+			$max_records =  DB::table('upload')->where('id', $last_id)->first();
 
     		$resultados = ResultParts::GetResultado($last_id);
     		return Response::Json($resultados);
