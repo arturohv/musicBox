@@ -126,9 +126,11 @@ namespace workerMQ{
 
 
 		public function ffmpeg_split($file, $iIni, $iFin, $outName){
-			$comm = "ffmpeg -acodec copy -i ".$file." -ss ".$iIni." -t ".$iFin." ".$outName;
+			$newName = '../musicBoxSite/public/'.$outName;
+			$comm = "ffmpeg -acodec copy -i ".$file." -ss ".$iIni." -t ".$iFin." ".$newName;
 			//echo "$comm\n";
 			echo shell_exec($comm);
+			
 			$this->insertResult($outName);
 
 
@@ -157,7 +159,7 @@ namespace workerMQ{
 			foreach ($media as $key => $value) {
 				if ($key == 'file') {
 					$pFile = $value;
-					$filename = "../musicBoxSite/".$pFile;					
+					$filename = $pFile;					
 				}
 
 				if ($key == 'id') {
@@ -172,10 +174,14 @@ namespace workerMQ{
 					$pTime = $value;					
 				}			
 			}
+
+			
 		   $existeArchivo = file_exists($filename);
 
 		   //Valida que exista el archivo en la ubicacion actual
 		   if ($existeArchivo == 1) {
+		   	
+
 		    	//Obtener Tamaño en bytes del archivo que se va a procesar
 		    	$fSize = filesize($filename) . ' bytes';
 		    	//Obtener la duración
@@ -209,7 +215,7 @@ namespace workerMQ{
 
 			    				if ($i == 1) {
 			    					//echo "00:00:00 -> $invHour:$invMin:$invSeg\n";
-			    					$this->ffmpeg_split($filename, '00:00:00', $this->formatTime($invHour,$invMin,$invSeg), '../musicBoxSite/uploads/parts/'.'file'.$pId.$i.'.mp3');
+			    					$this->ffmpeg_split($filename, '00:00:00', $this->formatTime($invHour,$invMin,$invSeg), 'uploads/parts/'.'file'.$pId.$i.'.mp3');
 			    				} else{
 			    					$bInvHour = $invHour;
 			    					$bInvMin = $invMin;
@@ -235,7 +241,7 @@ namespace workerMQ{
 				    				//********************************* 
 
 				    				//echo "$bInvHour:$bInvMin:$bInvSeg -> $invHour:$invMin:$invSeg\n";
-				    				$this->ffmpeg_split($filename, $this->formatTime($bInvHour,$bInvMin,$bInvSeg), $this->formatTime($iHour,$iMin,$iSec), '../musicBoxSite/uploads/parts/'.'file'.$pId.$i.'.mp3');
+				    				$this->ffmpeg_split($filename, $this->formatTime($bInvHour,$bInvMin,$bInvSeg), $this->formatTime($iHour,$iMin,$iSec), 'uploads/parts/'.'file'.$pId.$i.'.mp3');
 			    				}			
 			    				
 			    			}
@@ -254,7 +260,7 @@ namespace workerMQ{
 
 			    			for ($i=1; $i <=$parts ; $i++) { 
 			    				if ($i == 1) {
-			    					$this->ffmpeg_split($filename, '00:00:00', $this->formatTime($invHour,$invMin,'0'), '../musicBoxSite/uploads/parts/'.'file'.$pId.$i.'.mp3');
+			    					$this->ffmpeg_split($filename, '00:00:00', $this->formatTime($invHour,$invMin,'0'), 'uploads/parts/'.'file'.$pId.$i.'.mp3');
 			    				} else {
 
 			    					$bInvHour = $invHour;
@@ -271,7 +277,7 @@ namespace workerMQ{
 				    					}
 				    				}
 
-				    				$this->ffmpeg_split($filename, $this->formatTime($bInvHour,$bInvMin,$bInvSeg), $this->formatTime(intval($iHour),$iMin,'0'), '../musicBoxSite/uploads/parts/'.'file'.$pId.$i.'.mp3');
+				    				$this->ffmpeg_split($filename, $this->formatTime($bInvHour,$bInvMin,$bInvSeg), $this->formatTime(intval($iHour),$iMin,'0'), 'uploads/parts/'.'file'.$pId.$i.'.mp3');
 			    				}
 			    			}
 			    		}	

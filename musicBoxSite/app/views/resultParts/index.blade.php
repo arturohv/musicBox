@@ -36,7 +36,7 @@ var interval = null;
             for (var i = 0; i < json.length; i++) {                
                 var row = '<tr>';
                 row += '<td>' + json[i].archivo + '</td>';
-                row += '<td>' + json[i].ruta + '</td>';                
+                row += '<td><a href="' + json[i].ruta + '">Parte ' + (i + 1) + '</a></td>';                
                 row += '</tr>';
                 $('#tabla tbody tr:last').after(row);
 

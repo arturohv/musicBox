@@ -32,7 +32,7 @@ class UploadController extends \BaseController {
 		$parts = 0;
 		$timePerChunk = 0;
 
-		$destinationPath = 'uploads/originals';		
+		$destinationPath = public_path() . '/uploads/originals';		
 		$filename = $file->getClientOriginalName();
 		//$extension =$file->getClientOriginalExtension();
 		$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
