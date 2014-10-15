@@ -13,30 +13,22 @@ class ResultPartsController extends \BaseController {
 	public function index()
 	{	
 		
-		$id = Session::get('message');				
-		/*$this->layout->titulo = 'Resultados';
-		$resultados  = ResultParts::GetResultado($id);		
+		//$id = Session::get('message');				
 		
-		$this->layout->nest(
-			'content',
-			'resultParts.index',
-			array(
-				'resultados' => $resultados
-			)
-		);*/
+		//Obtine el ultimo id
+		
 
-	if (Request::ajax())
-		{			
-    		$resultados = ResultParts::GetResultado($id);
+	if (Request::ajax())		
+		{
+			$last_id = DB::table('upload')->max('id');
+
+    		$resultados = ResultParts::GetResultado($last_id);
     		return Response::Json($resultados);
 		}
 		$this->layout->titulo = 'Resultados';
 		$this->layout->nest(
 			'content',
-			'resultParts.index',
-			array(
-				'idResult' => $id
-			)
+			'resultParts.index'
 		);
 
 

@@ -10,24 +10,26 @@
         <th>Placa</th>
         <th>Acciones</th>
     </tr>
+
 </table>
 
-<script type="text/javascript">
-    //Asigna el id del archivo que se esta procesado
-    id = '<?php echo $idResult ;?>';
-
+<script type="text/javascript">    
 
     $(document).ready(function() {
         cargar_tabla();
-        
     });
 
+    setInterval(function() {
+      cargar_tabla();            
+    }, 2000);
+
     function cargar_tabla() {        
-       $.getJSON('results', function(json, id, textStatus) {
+       $.getJSON('results', function(json,  textStatus) {
+        
             for (var i = 0; i < json.length; i++) {                
                 var row = '<tr>';
-                row += '<td>' + json[i].id + '</td>';
-                row += '<td>' + json[i].filename + '</td>';                
+                row += '<td>' + json[i].archivo + '</td>';
+                row += '<td>' + json[i].ruta + '</td>';                
                 row += '</tr>';
                 $('#tabla tr:last').after(row);
             };            
