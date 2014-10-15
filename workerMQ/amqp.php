@@ -95,7 +95,7 @@ namespace workerMQ{
 		public function getParts($tSeg, $tTime){
 			$tTime = intval($tTime);
 			if ($tSeg >= ($tTime * 60)) {
-			 	return $tSeg / ($tTime * 30);
+			 	return $tSeg / ($tTime * 60);
 			 } else {
 			 	return 0;
 			 }
@@ -249,7 +249,11 @@ namespace workerMQ{
 			    		} else {
 			    			//Tiempo
 			    			$parts = $this->getParts($duracionSeg,$pTime);
-			    			$parts = intval($parts);
+			    			//$parts = intval($parts);
+			    			$parts = round($parts, 0);
+
+			    			echo "$duracionSeg \n";
+			    			echo "$parts \n";
 			    			
 			    			$iHour = $pTime / 60;			    					    			
 			    			$iMin = $iHour - intval($iHour);			    			

@@ -23,6 +23,18 @@ class UploadController extends \BaseController {
 		$this->layout->nest('content', 'uploads.create', array());		
 	}
 
+	public function validar($ext, $size, $ruta){
+		$valido = 1;
+		if($ext!=="mp3"){
+			$valido = 0;
+		}
+
+		if ($size <= 0) {
+			$valido = 0;
+		}
+		return $valido;
+	}
+
 	public function uploadFile()
 	{
 		$file = Input::file('file');
@@ -34,31 +46,34 @@ class UploadController extends \BaseController {
 
 		$destinationPath = public_path() . '/uploads/originals';		
 		$filename = $file->getClientOriginalName();
-		//$extension =$file->getClientOriginalExtension();
-		$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
-		if( $uploadSuccess ) {
-			$fileurl = $destinationPath . "/" . $filename;
-			//Renombrar el archivo con uno temporal
-			$newName = uniqid().'.mp3';			
-			rename($fileurl, $destinationPath.'/'.$newName);
-			$fileurl = $destinationPath . "/" . $newName;
-			if ($modeType == 'bySize') {
-				$parts = $valor; 
-			} else {
-				$timePerChunk = $valor;
-			}
-			//Guarda el registro en base de datos
-			$id = $this->store($filename,$fileurl,$parts,$timePerChunk);
-			return Redirect::to('results')->with('message',$id);
-			/*
-			//Redirige a la pagina de resultados
-			$this->layout->titulo = 'Resultados';
-			return Redirect::to('results/index')->with('id', $id);
-		   	//return Response::json('success', 200); // or do a redirect with some message that file was uploaded
+		$extension =$file->getClientOriginalExtension();
 
-		   	*/
+		if($this->validar($extension, $valor, 0) == 1){
+
+			$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
+			if( $uploadSuccess ) {
+				$fileurl = $destinationPath . "/" . $filename;
+				//Renombrar el archivo con uno temporal
+				$newName = uniqid().'.mp3';			
+				rename($fileurl, $destinationPath.'/'.$newName);
+				$fileurl = $destinationPath . "/" . $newName;
+				if ($modeType == 'bySize') {
+					$parts = $valor; 
+				} else {
+					$timePerChunk = $valor;
+				}
+				//Guarda el registro en base de datos
+				$id = $this->store($filename,$fileurl,$parts,$timePerChunk);
+				//Redirige a la pagina de resultados
+				return Redirect::to('results')->with('message',$id);			
+				
+				
+			} else {
+			   return Response::json('error', 400);
+			} 
 		} else {
-		   return Response::json('error', 400);
+			
+				return Redirect::to('/error');
 		}
 	}
 
@@ -70,7 +85,6 @@ class UploadController extends \BaseController {
 	 */
 	public function store($pFileName, $pFileUrl, $pParts, $timePerChunk)
 	{		
-		
 		$upload = new Upload();
 		$upload->filename = $pFileName;
 		$upload->fileurl = $pFileUrl;
@@ -81,9 +95,7 @@ class UploadController extends \BaseController {
 		$jsonString = '{"id":"'.$upload->id.'","file":"'.$upload->fileurl.'","parts":"'.$upload->parts.'","time_per_chunk":"'.$upload->time_per_chunk.'"}';				
 		//Envia el mensaje al servidor de colas
 		Queue::push('laravel', array('message' => $jsonString));
-		return $upload->id;	
-					
-							
+		return $upload->id;			
 	}
 
 

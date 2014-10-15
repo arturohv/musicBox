@@ -35,3 +35,8 @@ Route::get('contact', function()
 	return View::make('pages.contact');
 });
 
+Route::get('error', function()
+{
+	return View::make('pages.error');
+});
+

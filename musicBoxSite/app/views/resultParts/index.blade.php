@@ -8,8 +8,7 @@
     <thead>
         <tr>
             <th>Archivo</th>
-            <th>Descarga</th>  
-            
+            <th>Descarga</th>            
         </tr>
     </thead>
     <tbody>
@@ -27,7 +26,7 @@ var interval = null;
 
     interval = setInterval(function() {
       cargar_tabla();            
-    }, 2000);
+    }, 1000);
 
     function cargar_tabla() {        
        $.getJSON('results', function(json,  textStatus) {

@@ -20,7 +20,7 @@
 
                         <div class="form-group">
                         	{{ Form::label('splitBy', 'Modo de División:', array('class' => 'control-label col-md-3')) }}
- 							<div class="btn-group col-md-7" data-toggle="buttons">
+ 							<div class="btn-group col-md-7" >
 							    <label class="btn btn-default **active**">						       
 							       {{ Form::radio('tipoMod', 'bySize', true) }}
 							    Tamaño </label>

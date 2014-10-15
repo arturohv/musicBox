@@ -29,18 +29,6 @@ class ResultPartsController extends \BaseController {
 
 	}
 
-	/*public function download($id){	
-		//$this->layout->titulo = 'Resultados';
-		echo "hola";	
-		$url = DB::table('result_parts')->where('id',$id)->pluck('fileurl');
-		$file=public_path() . '/' . $url;
-		$headers = array(
-              'Content-Type: application/mp3',
-            );
-		return Response::download($file, $headers);
-	}*/
-
-
 	/**
 	 * Show the form for creating a new resource.
 	 *
