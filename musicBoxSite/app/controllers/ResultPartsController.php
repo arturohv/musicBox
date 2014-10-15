@@ -13,8 +13,8 @@ class ResultPartsController extends \BaseController {
 	public function index()
 	{	
 		
-		/*$id = Session::get('message');				
-		$this->layout->titulo = 'Resultados';
+		$id = Session::get('message');				
+		/*$this->layout->titulo = 'Resultados';
 		$resultados  = ResultParts::GetResultado($id);		
 		
 		$this->layout->nest(
@@ -27,13 +27,16 @@ class ResultPartsController extends \BaseController {
 
 	if (Request::ajax())
 		{			
-    		$aviones = ResultParts::all();
-    		return Response::Json($aviones);
+    		$resultados = ResultParts::GetResultado($id);
+    		return Response::Json($resultados);
 		}
 		$this->layout->titulo = 'Resultados';
 		$this->layout->nest(
 			'content',
-			'resultParts.index'
+			'resultParts.index',
+			array(
+				'idResult' => $id
+			)
 		);
 
 
