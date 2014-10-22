@@ -3,7 +3,7 @@
 php5 class (will not work in php4)
 for detecting bitrate and duration of regular mp3 files (not VBR files)
 */
- namespace workerMQ{
+ 
 //-----------------------------------------------------------------------------
 class mp3file
 {
@@ -341,5 +341,5 @@ class mp3file
     }
 }
 
-}
+
 ?>

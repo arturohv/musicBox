@@ -1,6 +1,6 @@
 <?PHP
 
-namespace workerMQ{
+
 /**
  * PgSQL.php
  * 
@@ -430,5 +430,5 @@ class PgSQL {
 	}
 }
 
-}
+
 ?>

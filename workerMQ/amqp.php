@@ -1,8 +1,8 @@
 <?php
-namespace workerMQ{
-	use AMQPConnection;
+
+	/*use AMQPConnection;
 	use AMQPChannel;
-	use AMQPQueue;
+	use AMQPQueue;*/
 
 	include_once('mp3Lib.php');
 	include_once('PgSQL.php');
@@ -252,14 +252,34 @@ namespace workerMQ{
 			    			//$parts = intval($parts);
 			    			$parts = round($parts, 0);
 
-			    			echo "$duracionSeg \n";
-			    			echo "$parts \n";
 			    			
-			    			$iHour = $pTime / 60;			    					    			
-			    			$iMin = $iHour - intval($iHour);			    			
-			    			$iMin = $iMin * 60;		    			
-			    			$invHour = intval($iHour);
-			    			$invMin = $iMin;
+			    			
+
+			    			//Si la duracion es inferior al tiempo de split
+			    			if ($duracionSeg >= ($pTime * 60)) {
+			    				$iHour = $pTime / 60;			    					    			
+				    			$iMin = $iHour - intval($iHour);			    			
+				    			$iMin = $iMin * 60;		    			
+				    			$invHour = intval($iHour);
+				    			$invMin = $iMin;
+				    			
+			    			} else {
+			    				$iHour = $duracionSeg / 3600;			    					    			
+				    			$iMin = $iHour - intval($iHour);			    			
+				    			$iMin = $iMin * 60;		    			
+				    			$invHour = intval($iHour);
+				    			$invMin = intval($iMin);
+
+				    			echo "$invHour \n";
+			    				echo "$invMin \n";
+
+				    			if ($parts == 0) {
+				    				$parts = 1;				    				
+				    			}
+				    			
+			    			}
+			    			
+			    			
 			    			
 
 			    			for ($i=1; $i <=$parts ; $i++) { 
@@ -301,7 +321,7 @@ namespace workerMQ{
 
 	}
 
-}
+
 
 
 

@@ -1,5 +1,9 @@
 <?php
 
+
+
+include_once('../workerMQ/mp3Lib.php');
+
 class UploadController extends \BaseController {
 	
 	/**
@@ -23,7 +27,27 @@ class UploadController extends \BaseController {
 		$this->layout->nest('content', 'uploads.create', array());		
 	}
 
-	public function validar($ext, $size, $ruta){
+	public function validarMeta($ruta){
+		$valido = 1;
+		
+		$duracionSeg = 0;
+		$f = $ruta;
+		$m = new mp3file($f);
+		$a = $m->get_metadata();
+		foreach ($a as $key => $value) {
+			if ($key == 'Length') {		
+				$duracionSeg = $value;						
+			} 
+		}
+
+		if ($duracionSeg <= 0) {
+			$valido = 0;
+		}
+
+		return $valido;
+	}
+
+	public function validar($ext, $size){
 		$valido = 1;
 		if($ext!=="mp3"){
 			$valido = 0;
@@ -31,49 +55,62 @@ class UploadController extends \BaseController {
 
 		if ($size <= 0) {
 			$valido = 0;
-		}
+		}		
+
+
+
+
 		return $valido;
 	}
 
 	public function uploadFile()
 	{
 		$file = Input::file('file');
-		$modeType = Input::get('tipoMod');
-		$valor = Input::get('valor');
 
-		$parts = 0;
-		$timePerChunk = 0;
+		if ($file != NULL) {			
+			$modeType = Input::get('tipoMod');
+			$valor = Input::get('valor');
 
-		$destinationPath = public_path() . '/uploads/originals';		
-		$filename = $file->getClientOriginalName();
-		$extension =$file->getClientOriginalExtension();
+			$parts = 0;
+			$timePerChunk = 0;
 
-		if($this->validar($extension, $valor, 0) == 1){
+			$destinationPath = public_path() . '/uploads/originals';		
+			$filename = $file->getClientOriginalName();
+			$extension =$file->getClientOriginalExtension();		
 
-			$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
-			if( $uploadSuccess ) {
-				$fileurl = $destinationPath . "/" . $filename;
-				//Renombrar el archivo con uno temporal
-				$newName = uniqid().'.mp3';			
-				rename($fileurl, $destinationPath.'/'.$newName);
-				$fileurl = $destinationPath . "/" . $newName;
-				if ($modeType == 'bySize') {
-					$parts = $valor; 
+			if($this->validar($extension, $valor) == 1){
+				$uploadSuccess = Input::file('file')->move($destinationPath, $filename);
+				
+				if( $uploadSuccess ) {
+					$fileurl = $destinationPath . "/" . $filename;
+
+					if ($this->validarMeta($fileurl) == 1) {									
+						//Renombrar el archivo con uno temporal
+						$newName = uniqid().'.mp3';			
+						rename($fileurl, $destinationPath.'/'.$newName);
+						$fileurl = $destinationPath . "/" . $newName;
+						if ($modeType == 'bySize') {
+							$parts = $valor; 
+						} else {
+							$timePerChunk = $valor;
+						}
+						//Guarda el registro en base de datos
+						$id = $this->store($filename,$fileurl,$parts,$timePerChunk);
+						//Redirige a la pagina de resultados
+						return Redirect::to('results')->with('message',$id);			
+					} else {
+						return Redirect::to('/error');
+					}
+					
 				} else {
-					$timePerChunk = $valor;
-				}
-				//Guarda el registro en base de datos
-				$id = $this->store($filename,$fileurl,$parts,$timePerChunk);
-				//Redirige a la pagina de resultados
-				return Redirect::to('results')->with('message',$id);			
-				
-				
+				   return Response::json('error', 400);
+				} 
 			} else {
-			   return Response::json('error', 400);
-			} 
+				
+					return Redirect::to('/error');
+			}
 		} else {
-			
-				return Redirect::to('/error');
+			return Redirect::to('/error');
 		}
 	}
 
@@ -149,3 +186,4 @@ class UploadController extends \BaseController {
 
 
 }
+
